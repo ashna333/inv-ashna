@@ -12,9 +12,7 @@ from django.http import Http404, FileResponse
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import UploadedFile
 import mimetypes
-from .models import UploadedFile
-from .serializers import FileSerializer
-
+from django.shortcuts import get_object_or_404
 
 
 @api_view(['POST'])
@@ -115,3 +113,25 @@ def delete_file(request, pk):
     
     file_obj.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+#Download File
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def download_file(request, pk):
+    # get file by UUID and make sure it belongs to logged-in user
+    file_obj = get_object_or_404(
+        UploadedFile,
+        pk=pk,
+        user=request.user
+    )
+
+    try:
+        return FileResponse(
+            file_obj.file.open('rb'),
+            as_attachment=True
+        )
+    except Exception:
+        raise Http404("File not found")

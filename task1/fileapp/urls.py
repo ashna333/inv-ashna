@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register, profile,logout
+from .views import register, profile,logout,download_file
 from . import views
 
 from rest_framework_simplejwt.views import (
@@ -18,4 +18,5 @@ urlpatterns = [
     path('files/<uuid:pk>/', views.get_file, name='get_file'),
     path('files/<uuid:pk>/update/', views.update_file, name='update_file'),
     path('files/<uuid:pk>/delete/', views.delete_file, name='delete_file'),
+    path('<uuid:pk>/download/', download_file),
 ]
